@@ -1,0 +1,116 @@
+#include <iostream>
+
+using namespace std;
+
+char playboard[3][3] = {{'1', '2', '3'}, {'4', '5', '6'}, {'7', '8', '9'}};
+char Marker;
+int Player;
+
+void displayBoard() {
+    cout << " " << playboard[0][0] << " | " << playboard[0][1] << " | " << playboard[0][2] << endl;
+    cout << "---|---|---" << endl;
+    cout << " " << playboard[1][0] << " | " << playboard[1][1] << " | " << playboard[1][2] << endl;
+    cout << "---|---|---" << endl;
+    cout << " " << playboard[2][0] << " | " << playboard[2][1] << " | " << playboard[2][2] << endl;
+}
+
+bool placeMarker(int slot) {
+    int row = (slot - 1) / 3;
+    int col = (slot - 1) % 3;
+
+    if (playboard[row][col] != 'X' && playboard[row][col] != 'O') {
+        playboard[row][col] = Marker;
+        return true;
+    }
+    return false;
+}
+
+int checkWin() {
+    for (int i = 0; i < 3; i++) {
+        if (playboard[i][0] == playboard[i][1] && playboard[i][1] == playboard[i][2]) {
+            return Player;
+        }
+    }
+    
+    for (int i = 0; i < 3; i++) {
+        if (playboard[0][i] == playboard[1][i] && playboard[1][i] == playboard[2][i]) {
+            return Player;
+        }
+    }
+    
+    if (playboard[0][0] == playboard[1][1] && playboard[1][1] == playboard[2][2]) {
+        return Player;
+    }
+    if (playboard[0][2] == playboard[1][1] && playboard[1][1] == playboard[2][0]) {
+        return Player;
+    }
+
+    return 0;
+}
+
+bool checkDraw() {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (playboard[i][j] != 'X' && playboard[i][j] != 'O') {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void switchPlayer() {
+    Player = (Player == 1) ? 2 : 1;
+    Marker = (Marker == 'X') ? 'O' : 'X';
+}
+
+void game() {
+    int winner = 0;
+    int slot;
+    
+    Player = 1;
+    Marker = 'X';
+
+    displayBoard();
+
+    while (winner == 0 && !checkDraw()) {
+        cout << "Player " << Player << " (" << Marker << "), enter your slot: ";
+        cin >> slot;
+
+        if (slot < 1 || slot > 9 || !placeMarker(slot)) {
+            cout << "Invalid slot! Try again."<<endl;
+            continue;
+        }
+
+        displayBoard();
+
+        winner = checkWin();
+        if (winner == 0) {
+            switchPlayer();
+        }
+    }
+
+    if (winner != 0) {
+        cout << "Player " << winner << " (" << Marker << ") won the game!"<<endl;
+    } else {
+        cout << "game draw!"<<endl;
+    }
+}
+
+int main() {
+    char playAgain;
+
+    do {
+        game();
+        cout << "Do you want to play again? (y/n): "<<endl;;
+        cin >> playAgain;
+        
+        playboard[0][0] = '1'; playboard[0][1] = '2'; playboard[0][2] = '3';
+        playboard[1][0] = '4'; playboard[1][1] = '5'; playboard[1][2] = '6';
+        playboard[2][0] = '7'; playboard[2][1] = '8'; playboard[2][2] = '9';
+    } while (playAgain == 'y' || playAgain == 'Y');
+
+    cout << "Thank You!"<<endl;
+
+    return 0;
+}
